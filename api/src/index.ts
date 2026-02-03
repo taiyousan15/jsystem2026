@@ -8,6 +8,8 @@ import { authRouter } from './routes/auth.js';
 import { accountRouter } from './routes/accounts.js';
 import { analyticsRouter } from './routes/analytics.js';
 import { jobsRouter } from './routes/jobs.js';
+import { reportsRouter } from './routes/reports.js';
+import { usersRouter } from './routes/users.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { authMiddleware } from './middleware/auth.js';
 import { startWorkers } from './workers/index.js';
@@ -40,6 +42,8 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/accounts', authMiddleware, accountRouter);
 app.use('/api/v1/analytics', authMiddleware, analyticsRouter);
 app.use('/api/v1/jobs', authMiddleware, jobsRouter);
+app.use('/api/v1/reports', authMiddleware, reportsRouter);
+app.use('/api/v1/users', authMiddleware, usersRouter);
 
 // Error handler
 app.use(errorHandler);

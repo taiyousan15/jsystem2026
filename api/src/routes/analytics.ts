@@ -142,3 +142,92 @@ analyticsRouter.get('/engagement/:accountId', async (req: AuthRequest, res: Resp
     posts: data,
   });
 });
+
+// GET /api/v1/analytics/summary/:accountId
+analyticsRouter.get('/summary/:accountId', async (req: AuthRequest, res: Response) => {
+  const { accountId } = req.params;
+  const { days = '30' } = req.query;
+  const daysNum = parseInt(days as string, 10);
+
+  // Verify account belongs to user's team
+  const account = await prisma.snsAccount.findFirst({
+    where: {
+      id: accountId,
+      teamId: req.user!.teamId,
+    },
+  });
+
+  if (!account) {
+    throw new AppError(404, 'ACCOUNT_NOT_FOUND', 'アカウントが見つかりません');
+  }
+
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - daysNum);
+
+  // Get follower metrics
+  const metrics = await prisma.followerMetric.findMany({
+    where: {
+      accountId,
+      recordedDate: {
+        gte: startDate,
+      },
+    },
+    orderBy: { recordedDate: 'asc' },
+  });
+
+  // Get posts for engagement calculation
+  const posts = await prisma.post.findMany({
+    where: {
+      accountId,
+      postedAt: {
+        gte: startDate,
+      },
+    },
+  });
+
+  // Calculate follower growth
+  let followerGrowth = 0;
+  if (metrics.length >= 2) {
+    followerGrowth = metrics[metrics.length - 1].followerCount - metrics[0].followerCount;
+  }
+
+  // Calculate engagement metrics
+  let totalLikes = 0;
+  let totalComments = 0;
+  const latestFollowerCount = metrics[metrics.length - 1]?.followerCount || 0;
+
+  posts.forEach((post) => {
+    const engagement = post.engagement as { likes?: number; comments?: number } | null;
+    totalLikes += engagement?.likes || 0;
+    totalComments += engagement?.comments || 0;
+  });
+
+  const avgLikes = posts.length > 0 ? Math.round(totalLikes / posts.length) : 0;
+  const avgComments = posts.length > 0 ? Math.round(totalComments / posts.length) : 0;
+
+  // Calculate engagement rate
+  const totalEngagement = totalLikes + totalComments;
+  const engagementRate =
+    latestFollowerCount > 0 && posts.length > 0
+      ? (totalEngagement / posts.length / latestFollowerCount) * 100
+      : 0;
+
+  // Find best performing day (mock data for now)
+  const days_jp = ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'];
+  const topPerformingDay = days_jp[Math.floor(Math.random() * 7)];
+
+  // Calculate reach trend (mock data for now)
+  const reachTrend = Math.round((Math.random() - 0.3) * 20);
+
+  res.json({
+    success: true,
+    data: {
+      followerGrowth,
+      engagementRate: parseFloat(engagementRate.toFixed(2)),
+      avgLikes,
+      avgComments,
+      topPerformingDay,
+      reachTrend,
+    },
+  });
+});
