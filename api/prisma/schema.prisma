@@ -1,0 +1,204 @@
+// SNS Research Tool - Database Schema
+// Based on design.md Section 5
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// User Management
+// ============================================
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String    @map("password_hash")
+  name          String
+  role          UserRole  @default(MEMBER)
+  failedAttempts Int      @default(0) @map("failed_attempts")
+  lockedUntil   DateTime? @map("locked_until")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  ownedTeams    Team[]       @relation("TeamOwner")
+  teamMembers   TeamMember[]
+  reports       Report[]
+  auditLogs     AuditLog[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  MEMBER
+}
+
+// ============================================
+// Team Management
+// ============================================
+
+model Team {
+  id        String   @id @default(uuid())
+  name      String
+  ownerId   String   @map("owner_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  owner       User         @relation("TeamOwner", fields: [ownerId], references: [id])
+  members     TeamMember[]
+  snsAccounts SnsAccount[]
+  reports     Report[]
+
+  @@map("teams")
+}
+
+model TeamMember {
+  id       String         @id @default(uuid())
+  teamId   String         @map("team_id")
+  userId   String         @map("user_id")
+  role     TeamMemberRole @default(MEMBER)
+  joinedAt DateTime       @default(now()) @map("joined_at")
+
+  // Relations
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+  @@map("team_members")
+}
+
+enum TeamMemberRole {
+  ADMIN
+  MANAGER
+  MEMBER
+}
+
+// ============================================
+// SNS Account Management
+// ============================================
+
+model SnsAccount {
+  id          String      @id @default(uuid())
+  teamId      String      @map("team_id")
+  platform    SnsPlatform
+  accountId   String      @map("account_id")
+  displayName String?     @map("display_name")
+  metadata    Json?
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  // Relations
+  team            Team             @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  followerMetrics FollowerMetric[]
+  posts           Post[]
+
+  @@unique([teamId, platform, accountId])
+  @@map("sns_accounts")
+}
+
+enum SnsPlatform {
+  X
+  INSTAGRAM
+  TIKTOK
+}
+
+// ============================================
+// Metrics & Analytics
+// ============================================
+
+model FollowerMetric {
+  id             String   @id @default(uuid())
+  accountId      String   @map("account_id")
+  recordedDate   DateTime @map("recorded_date") @db.Date
+  followerCount  Int      @map("follower_count")
+  followingCount Int?     @map("following_count")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  // Relations
+  account SnsAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@unique([accountId, recordedDate])
+  @@index([accountId, recordedDate(sort: Desc)])
+  @@map("follower_metrics")
+}
+
+model Post {
+  id              String    @id @default(uuid())
+  accountId       String    @map("account_id")
+  platformPostId  String    @map("platform_post_id")
+  content         String?
+  engagement      Json?     // {likes, comments, shares, ...}
+  sentimentScore  Float?    @map("sentiment_score") // -1.0 to 1.0
+  sentimentLabel  String?   @map("sentiment_label") // Positive/Negative/Neutral/Unknown
+  postedAt        DateTime  @map("posted_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  account SnsAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@unique([accountId, platformPostId])
+  @@index([accountId, postedAt(sort: Desc)])
+  @@index([accountId, sentimentScore])
+  @@map("posts")
+}
+
+// ============================================
+// Reports
+// ============================================
+
+model Report {
+  id          String       @id @default(uuid())
+  userId      String       @map("user_id")
+  teamId      String       @map("team_id")
+  status      ReportStatus @default(PENDING)
+  format      ReportFormat
+  fileUrl     String?      @map("file_url")
+  parameters  Json?        // Selected accounts, date range, etc.
+  createdAt   DateTime     @default(now()) @map("created_at")
+  completedAt DateTime?    @map("completed_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+  team Team @relation(fields: [teamId], references: [id])
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("reports")
+}
+
+enum ReportStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum ReportFormat {
+  PDF
+  EXCEL
+}
+
+// ============================================
+// Audit Logs
+// ============================================
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  action    String   // LOGIN, LOGOUT, ACCOUNT_REGISTER, REPORT_GENERATE, etc.
+  details   Json?
+  ipAddress String   @map("ip_address")
+  userAgent String   @map("user_agent")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("audit_logs")
+}

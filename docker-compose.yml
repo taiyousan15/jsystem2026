@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: sns-research-db
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: localdev123
+      POSTGRES_DB: sns_research
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d sns_research"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis (Cache + Job Queue)
+  redis:
+    image: redis:7-alpine
+    container_name: sns-research-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Commander (GUI for Redis - Development only)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: sns-research-redis-gui
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+
+volumes:
+  postgres_data:
+  redis_data:
