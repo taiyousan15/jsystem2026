@@ -7,8 +7,10 @@ import dotenv from 'dotenv';
 import { authRouter } from './routes/auth.js';
 import { accountRouter } from './routes/accounts.js';
 import { analyticsRouter } from './routes/analytics.js';
+import { jobsRouter } from './routes/jobs.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { authMiddleware } from './middleware/auth.js';
+import { startWorkers } from './workers/index.js';
 
 dotenv.config();
 
@@ -37,6 +39,7 @@ app.use('/api/v1/auth', authRouter);
 // Protected routes
 app.use('/api/v1/accounts', authMiddleware, accountRouter);
 app.use('/api/v1/analytics', authMiddleware, analyticsRouter);
+app.use('/api/v1/jobs', authMiddleware, jobsRouter);
 
 // Error handler
 app.use(errorHandler);
@@ -44,6 +47,11 @@ app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`🚀 API Server running on http://localhost:${PORT}`);
   console.log(`📊 Health check: http://localhost:${PORT}/health`);
+
+  // Start workers if enabled
+  if (process.env.ENABLE_WORKERS !== 'false') {
+    startWorkers();
+  }
 });
 
 export default app;
