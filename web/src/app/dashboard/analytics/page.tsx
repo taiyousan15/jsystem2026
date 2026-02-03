@@ -10,6 +10,8 @@ import {
   Download,
 } from 'lucide-react'
 import { FollowerChart } from '@/components/charts/FollowerChart'
+import { KeywordCloud } from '@/components/charts/KeywordCloud'
+import { SentimentChart } from '@/components/charts/SentimentChart'
 
 interface Account {
   id: string
@@ -256,6 +258,27 @@ export default function AnalyticsPage() {
           </div>
         </div>
       </div>
+
+      {/* Keyword and Sentiment Analysis */}
+      {selectedAccount && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Keyword analysis */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">
+              キーワード分析
+            </h2>
+            <KeywordCloud accountId={selectedAccount} days={parseInt(dateRange)} />
+          </div>
+
+          {/* Sentiment analysis */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">
+              センチメント分析
+            </h2>
+            <SentimentChart accountId={selectedAccount} days={parseInt(dateRange)} />
+          </div>
+        </div>
+      )}
 
       {/* No account message */}
       {accounts.length === 0 && (

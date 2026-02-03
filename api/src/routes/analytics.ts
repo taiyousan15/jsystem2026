@@ -2,6 +2,7 @@ import { Router, Response } from 'express';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../utils/prisma.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { analyzeKeywords, analyzeSentimentBatch } from '../services/analysis/index.js';
 
 export const analyticsRouter = Router();
 
@@ -229,5 +230,57 @@ analyticsRouter.get('/summary/:accountId', async (req: AuthRequest, res: Respons
       topPerformingDay,
       reachTrend,
     },
+  });
+});
+
+// GET /api/v1/analytics/keywords/:accountId
+analyticsRouter.get('/keywords/:accountId', async (req: AuthRequest, res: Response) => {
+  const { accountId } = req.params;
+  const { days = '30' } = req.query;
+  const daysNum = parseInt(days as string, 10);
+
+  // Verify account belongs to user's team
+  const account = await prisma.snsAccount.findFirst({
+    where: {
+      id: accountId,
+      teamId: req.user!.teamId,
+    },
+  });
+
+  if (!account) {
+    throw new AppError(404, 'ACCOUNT_NOT_FOUND', 'アカウントが見つかりません');
+  }
+
+  const result = await analyzeKeywords(accountId, daysNum);
+
+  res.json({
+    success: true,
+    data: result,
+  });
+});
+
+// GET /api/v1/analytics/sentiment/:accountId
+analyticsRouter.get('/sentiment/:accountId', async (req: AuthRequest, res: Response) => {
+  const { accountId } = req.params;
+  const { days = '30' } = req.query;
+  const daysNum = parseInt(days as string, 10);
+
+  // Verify account belongs to user's team
+  const account = await prisma.snsAccount.findFirst({
+    where: {
+      id: accountId,
+      teamId: req.user!.teamId,
+    },
+  });
+
+  if (!account) {
+    throw new AppError(404, 'ACCOUNT_NOT_FOUND', 'アカウントが見つかりません');
+  }
+
+  const result = await analyzeSentimentBatch(accountId, daysNum);
+
+  res.json({
+    success: true,
+    data: result,
   });
 });

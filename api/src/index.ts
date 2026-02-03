@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import path from 'path';
 
 import { authRouter } from './routes/auth.js';
 import { accountRouter } from './routes/accounts.js';
@@ -29,6 +30,9 @@ app.use(cors({
 }));
 app.use(morgan('combined'));
 app.use(express.json());
+
+// Static file serving for reports
+app.use('/reports', express.static(path.join(process.cwd(), 'reports')));
 
 // Health check
 app.get('/health', (req, res) => {

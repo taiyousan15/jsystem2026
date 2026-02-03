@@ -3,6 +3,7 @@ import { AuthRequest } from '../middleware/auth.js'
 import { prisma } from '../utils/prisma.js'
 import { AppError } from '../middleware/errorHandler.js'
 import { z } from 'zod'
+import { generateReport } from '../services/analysis/index.js'
 
 export const reportsRouter = Router()
 
@@ -45,37 +46,11 @@ reportsRouter.post('/', async (req: AuthRequest, res: Response) => {
     },
   })
 
-  // In a real implementation, this would trigger a background job
-  // For now, we'll simulate report generation
-  setTimeout(async () => {
-    try {
-      await prisma.report.update({
-        where: { id: report.id },
-        data: {
-          status: 'PROCESSING',
-        },
-      })
-
-      // Simulate processing time
-      await new Promise((resolve) => setTimeout(resolve, 3000))
-
-      await prisma.report.update({
-        where: { id: report.id },
-        data: {
-          status: 'COMPLETED',
-          completedAt: new Date(),
-          fileUrl: `/reports/${report.id}.${body.format.toLowerCase()}`,
-        },
-      })
-    } catch (error) {
-      await prisma.report.update({
-        where: { id: report.id },
-        data: {
-          status: 'FAILED',
-        },
-      })
-    }
-  }, 1000)
+  // Generate report in background
+  const days = parseInt(body.dateRange, 10) || 30
+  generateReport(report.id, body.accountIds, body.format, days).catch((error) => {
+    console.error('Report generation error:', error)
+  })
 
   res.status(201).json({
     success: true,
