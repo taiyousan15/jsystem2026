@@ -10,9 +10,9 @@
 
 | ADR ID | タイトル | ステータス | 決定日 |
 |--------|---------|-----------|--------|
-| ADR-001 | フロントエンド/バックエンドフレームワーク選定 | Proposed | - |
-| ADR-002 | センチメント分析エンジン選定 | Proposed | - |
-| ADR-003 | データベース・キャッシュ選定 | Proposed | - |
+| [ADR-001](./ADR-001-framework-selection.md) | フロントエンド/バックエンドフレームワーク選定 | Accepted | 2026-02-03 |
+| [ADR-002](./ADR-002-sentiment-analysis.md) | センチメント分析エンジン選定 | Proposed | 2026-02-03 |
+| [ADR-003](./ADR-003-database-selection.md) | データベース・キャッシュ選定 | Accepted | 2026-02-03 |
 
 ## ステータス定義
 
