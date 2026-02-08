@@ -1,0 +1,9 @@
+{
+  "name": "context-guard",
+  "version": "1.0.1",
+  "description": "Claude Code Context Exhaustion Prevention System",
+  "bin": {
+    "context-guard": "./context-guard/install-all-node.js"
+  },
+  "license": "MIT"
+}

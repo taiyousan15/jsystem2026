@@ -195,24 +195,16 @@ jsystem2026/
 ## インストール・アップデート（ワンコマンド）
 
 > **2026-02-08 更新: Mac / Windows 両対応**
->
-> ターミナルにコピー＆ペーストして Enter を押すだけで完了します。
 
-### Mac / Linux
+ターミナルにコピー＆ペーストして Enter を押すだけで完了します。
 
-```bash
-curl -sL https://raw.githubusercontent.com/taiyousan15/jsystem2026/main/context-guard/install-all.sh | bash
+### Mac / Linux / Windows 共通
+
+```
+npx github:taiyousan15/jsystem2026
 ```
 
-### Windows（PowerShell）
-
-```powershell
-irm https://raw.githubusercontent.com/taiyousan15/jsystem2026/main/context-guard/install-all.ps1 | iex
-```
-
-### 実行後
-
-ターミナルと Claude Code を再起動してください。
+完了後、ターミナルと Claude Code を再起動してください。
 
 ---
 
