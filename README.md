@@ -192,37 +192,41 @@ jsystem2026/
 
 ---
 
-## インストール・アップデート（Claude Code に貼り付けて実行）
+## インストール・アップデート
 
 > **2026-02-08 更新: Mac / Windows 両対応**
+>
+> **ターミナルで直接実行してください**（Claude Code のチャットではなく、OS のターミナルアプリで実行）
+>
+> Claude Code はセキュリティ上、外部リポジトリのスクリプト実行をブロックします。そのため、ターミナルから直接実行してください。
 
-Claude Code のチャットにコピー＆ペーストするだけで完了します。
+### Mac / Linux（ターミナル.app / iTerm2 で実行）
 
-### Mac / Linux
-
-```
-以下のコマンドを順番に実行して Context Guard をインストールしてください:
+```bash
 rm -rf /tmp/context-guard && git clone https://github.com/taiyousan15/jsystem2026.git /tmp/context-guard && bash /tmp/context-guard/context-guard/install.sh && claude mcp add praetorian -- npx -y claude-praetorian-mcp && claude mcp add claude-historian -- npx -y claude-historian-mcp
-完了したらターミナルと Claude Code を再起動してください。
 ```
 
-### Windows
+### Windows（PowerShell で実行）
 
-```
-以下のコマンドを順番に実行して Context Guard をインストールしてください:
+```powershell
 Remove-Item -Recurse -Force $env:TEMP\context-guard -ErrorAction SilentlyContinue; git clone https://github.com/taiyousan15/jsystem2026.git $env:TEMP\context-guard; $sk = Join-Path $env:USERPROFILE '.claude\skills\strategic-compact'; New-Item -ItemType Directory -Force -Path $sk | Out-Null; Copy-Item "$env:TEMP\context-guard\context-guard\skills\*" -Destination $sk -Force; setx CLAUDE_AUTOCOMPACT_PCT_OVERRIDE 70; claude mcp add praetorian -- npx -y claude-praetorian-mcp; claude mcp add claude-historian -- npx -y claude-historian-mcp
-完了したらターミナルと Claude Code を再起動してください。
+```
+
+### 実行後
+
+```
+ターミナルと Claude Code を再起動してください。
 ```
 
 ### 実行内容
 
-| # | Mac | Windows | 内容 |
-|---|-----|---------|------|
-| 1 | `rm -rf /tmp/context-guard` | `Remove-Item ... $env:TEMP\context-guard` | 旧データ削除 |
-| 2 | `git clone ...` | `git clone ...` | リポジトリ取得 |
-| 3 | `bash install.sh` | `New-Item` + `Copy-Item` | スキルスクリプト3つインストール |
-| 4 | `install.sh`内で自動 | `setx CLAUDE_AUTOCOMPACT_PCT_OVERRIDE 70` | 環境変数を永続設定 |
-| 5 | `claude mcp add` x2 | `claude mcp add` x2 | MCP サーバー2つ追加 |
+| # | 処理 | Mac | Windows |
+|---|------|-----|---------|
+| 1 | 旧データ削除 | `rm -rf /tmp/context-guard` | `Remove-Item ... $env:TEMP\context-guard` |
+| 2 | リポジトリ取得 | `git clone ...` | `git clone ...` |
+| 3 | スキル3つインストール | `bash install.sh` | `New-Item` + `Copy-Item` |
+| 4 | 環境変数を永続設定 | `install.sh`内で自動 | `setx CLAUDE_AUTOCOMPACT_PCT_OVERRIDE 70` |
+| 5 | MCP サーバー2つ追加 | `claude mcp add` x2 | `claude mcp add` x2 |
 
 ---
 
