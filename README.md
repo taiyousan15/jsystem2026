@@ -192,39 +192,16 @@ jsystem2026/
 
 ---
 
-## インストール・アップデート
+## インストール・アップデート（ワンコマンド）
 
-### 新規インストール
+以下を Claude Code のチャットに貼り付けるだけで、インストール・アップデートが完了します：
 
-```bash
-git clone https://github.com/taiyousan15/jsystem2026.git
-cd jsystem2026
-bash context-guard/install.sh
+```
+以下のコマンドを実行して Context Guard をインストールしてください:
+rm -rf /tmp/context-guard && git clone https://github.com/taiyousan15/jsystem2026.git /tmp/context-guard && bash /tmp/context-guard/context-guard/install.sh && claude mcp add praetorian -- npx -y claude-praetorian-mcp && claude mcp add claude-historian -- npx -y claude-historian-mcp
 ```
 
-### アップデート（既存ユーザー）
-
-```bash
-cd jsystem2026
-git pull origin main
-bash context-guard/install.sh
-```
-
-### MCP サーバー追加（初回のみ）
-
-```bash
-claude mcp add praetorian -- npx -y claude-praetorian-mcp
-claude mcp add claude-historian -- npx -y claude-historian-mcp
-```
-
-### 対応環境
-
-| OS | 方法 |
-|----|------|
-| **Mac / Linux** | そのままターミナルで実行 |
-| **Windows** | Git Bash または WSL で実行（Git for Windows に同梱） |
-
-> **Note:** `install.sh` は Bash スクリプトのため、Windows では Git Bash（Git インストール時に付属）または WSL をご利用ください。
+> **対応OS:** Mac / Linux はそのまま実行。Windows は Git Bash または WSL で実行。
 
 ---
 
