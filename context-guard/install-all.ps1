@@ -14,6 +14,15 @@ New-Item -ItemType Directory -Force -Path $sk | Out-Null
 Copy-Item "$tmp\context-guard\skills\*" -Destination $sk -Force
 Write-Host "[Skills] 3 scripts installed to $sk" -ForegroundColor Green
 
+# 2.5. リサーチ委譲ルール
+$rulesDir = Join-Path $env:USERPROFILE '.claude\rules'
+New-Item -ItemType Directory -Force -Path $rulesDir | Out-Null
+$ruleSrc = "$tmp\context-guard\rules\research-delegation.md"
+if (Test-Path $ruleSrc) {
+    Copy-Item $ruleSrc -Destination $rulesDir -Force
+    Write-Host "[Rules] research-delegation.md installed" -ForegroundColor Green
+}
+
 # 3. 環境変数設定
 $current = [System.Environment]::GetEnvironmentVariable('CLAUDE_AUTOCOMPACT_PCT_OVERRIDE', 'User')
 if (-not $current) {

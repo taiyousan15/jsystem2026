@@ -20,6 +20,7 @@ Claude Code で大規模タスクを実行すると、200K トークンのコン
 | 2 | 自動コンパクション設定 | デフォルト95%→**70%**で早期発動（枯渇前に圧縮） |
 | 3 | Praetorian MCP | ランタイムのトークンを**90%以上**圧縮 |
 | 4 | Claude Historian MCP | 過去セッション検索で再調査不要 |
+| 5 | リサーチ委譲ルール | 並列Webリクエストの連鎖失敗を防止（サブエージェント委譲） |
 
 ---
 
@@ -159,6 +160,8 @@ jsystem2026/
     ├── install-all.sh              # Mac/Linux ワンコマンド
     ├── install-all.ps1             # Windows ワンコマンド
     ├── install-all-node.js         # npx クロスプラットフォーム
+    ├── rules/
+    │   └── research-delegation.md  # リサーチ委譲ルール
     └── skills/
         ├── suggest-compact.sh      # ツールコール数カウンター
         ├── check-agent-count.sh    # エージェント数監視
@@ -174,6 +177,13 @@ jsystem2026/
 ---
 
 ## 更新履歴
+
+### 2026-02-08: v1.0.3 リサーチ委譲ルール追加
+
+| 項目 | 内容 |
+|------|------|
+| 🔬 リサーチ委譲ルール | 並列Webリクエストの連鎖失敗（Sibling tool call errored）を防止 |
+| 📋 `~/.claude/rules/` に自動配置 | Claude Code が自動でルールを読み込み、サブエージェント委譲を実行 |
 
 ### 2026-02-08: v1.0.2 ワンコマンドインストーラー
 
