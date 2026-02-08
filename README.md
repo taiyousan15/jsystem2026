@@ -194,23 +194,47 @@ jsystem2026/
 
 ## インストール・アップデート（Claude Code に貼り付けて実行）
 
+> **2026-02-08 更新: Mac / Windows 両対応**
+
+Claude Code のチャットにコピー＆ペーストするだけで完了します。
+
 ### Mac / Linux
 
 ```
-以下のコマンドを実行して Context Guard をインストールしてください:
+以下のコマンドを順番に実行して Context Guard をインストールしてください:
 rm -rf /tmp/context-guard && git clone https://github.com/taiyousan15/jsystem2026.git /tmp/context-guard && bash /tmp/context-guard/context-guard/install.sh && claude mcp add praetorian -- npx -y claude-praetorian-mcp && claude mcp add claude-historian -- npx -y claude-historian-mcp
+完了したらターミナルと Claude Code を再起動してください。
 ```
 
 ### Windows
 
 ```
-以下のコマンドを実行して Context Guard をインストールしてください:
+以下のコマンドを順番に実行して Context Guard をインストールしてください:
 Remove-Item -Recurse -Force $env:TEMP\context-guard -ErrorAction SilentlyContinue; git clone https://github.com/taiyousan15/jsystem2026.git $env:TEMP\context-guard; $sk = Join-Path $env:USERPROFILE '.claude\skills\strategic-compact'; New-Item -ItemType Directory -Force -Path $sk | Out-Null; Copy-Item "$env:TEMP\context-guard\context-guard\skills\*" -Destination $sk -Force; setx CLAUDE_AUTOCOMPACT_PCT_OVERRIDE 70; claude mcp add praetorian -- npx -y claude-praetorian-mcp; claude mcp add claude-historian -- npx -y claude-historian-mcp
+完了したらターミナルと Claude Code を再起動してください。
 ```
+
+### 実行内容
+
+| # | Mac | Windows | 内容 |
+|---|-----|---------|------|
+| 1 | `rm -rf /tmp/context-guard` | `Remove-Item ... $env:TEMP\context-guard` | 旧データ削除 |
+| 2 | `git clone ...` | `git clone ...` | リポジトリ取得 |
+| 3 | `bash install.sh` | `New-Item` + `Copy-Item` | スキルスクリプト3つインストール |
+| 4 | `install.sh`内で自動 | `setx CLAUDE_AUTOCOMPACT_PCT_OVERRIDE 70` | 環境変数を永続設定 |
+| 5 | `claude mcp add` x2 | `claude mcp add` x2 | MCP サーバー2つ追加 |
 
 ---
 
 ## 更新履歴
+
+### 2026-02-08: v1.0.1 Mac / Windows 両対応アップデート
+
+| 項目 | 内容 |
+|------|------|
+| 🖥️ Windows対応 | PowerShell ワンコマンドインストール追加 |
+| 📋 実行内容表 | Mac / Windows 各ステップの対応表追加 |
+| 🔄 再起動案内 | インストール後の再起動手順を明記 |
 
 ### 2026-02-08: v1.0.0 初回リリース
 
