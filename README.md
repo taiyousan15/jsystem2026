@@ -8,6 +8,92 @@
 
 ---
 
+## 2026-02-09: v1.1.0 Google Auth System - 5-Layer Fallback Google認証自動化
+
+Playwright ベースの Google 認証を **5段階のフォールバック** で自動化するシステムを追加しました。1回だけ手動ログインすれば、以降は Cookie や Chrome プロファイルを活用して全自動で認証済みブラウザを取得できます。全4レベル × 7サイト = **140/140 (100%)** のテストに合格しています。
+
+### 5-Layer アーキテクチャ
+
+| Level | 戦略 | 速度 | 説明 |
+|:-----:|------|:----:|------|
+| 1 | StorageState | ~1秒 | 保存済み Cookie JSON から最速復元 |
+| 2 | PersistentContext | ~3秒 | Chrome プロファイルディレクトリを再利用 |
+| 3 | Patchright+Stealth | ~3秒 | ステルスブラウザ＋フィンガープリント偽装 |
+| 4 | CDP Connection | ~4秒 | Chrome DevTools Protocol 経由＋Cookie注入 |
+| 5 | Manual Login | 初回のみ | ブラウザが開き、手動でログイン |
+
+### 受け取り方法（3つの方法から選べます）
+
+| 方法 | こんな人向け | コマンド |
+|:----:|------------|---------|
+| **tarball** | ファイルを直接もらって使いたい人 | `npm install ./google-auth-system-1.1.0.tgz` |
+| **GitHub Packages** | チーム開発で npm レジストリで管理したい人 | `npm install @your-org/google-auth-system` |
+| **git URL** | GitHub リポジトリから直接取り込みたい人 | `npm install git+ssh://git@github.com:taiyousan15/jsystem2026.git` |
+
+#### 方法1: tarball (ファイル直接渡し) - 最もシンプル
+
+一番手軽な方法です。`.tgz` ファイルを Slack や Google Drive などで渡すだけです。
+
+```bash
+# 配布する側: tarball を作成
+cd google-auth-system && npm pack
+# → google-auth-system-1.1.0.tgz が生成される。このファイルを相手に渡す
+
+# 受け取った側: インストール → 初回セットアップ
+npm install ./google-auth-system-1.1.0.tgz
+npx google-auth-setup    # Chrome が開くので、Google アカウントでログイン
+```
+
+#### 方法2: GitHub Packages (プライベート npm レジストリ)
+
+チーム開発で、バージョン管理とアクセス制御を行いたい場合に最適です。
+
+```bash
+# .npmrc にレジストリを設定（1回だけ）
+echo "@your-org:registry=https://npm.pkg.github.com" >> .npmrc
+
+# インストール → 初回セットアップ
+npm install @your-org/google-auth-system
+npx google-auth-setup
+```
+
+#### 方法3: git URL 直接インストール
+
+GitHub のリポジトリから直接インストールします。レジストリ不要で始められます。
+
+```bash
+npm install git+ssh://git@github.com:taiyousan15/jsystem2026.git
+npx google-auth-setup
+```
+
+### インストール後の使い方
+
+```typescript
+import { GoogleAuthManager } from 'google-auth-system';
+
+// 認証（L1→L2→L3→L4→L5 の順で自動試行）
+const auth = new GoogleAuthManager();
+const result = await auth.authenticate();
+
+if (result.success) {
+  await result.page.goto('https://docs.google.com');  // 認証済みで操作可能
+}
+
+await auth.clearSession();  // セッション全クリア（Cookie + プロファイル）
+await auth.cleanup();       // ブラウザを閉じる
+```
+
+### CLI コマンド（ターミナルから直接実行）
+
+```bash
+npx google-auth-setup                  # 初回セットアップ（Chromeが開いてログイン）
+npx google-auth-clear                  # 全セッションクリア
+npx google-auth-clear --storage-state  # Cookie JSONのみクリア
+npx google-auth-clear --profile        # Chromeプロファイルのみクリア
+```
+
+---
+
 ## これは何？
 
 Claude Code で大規模タスクを実行すると、200K トークンのコンテキストウィンドウが枯渇し `Conversation too long` エラーが発生します。
