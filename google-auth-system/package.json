@@ -1,0 +1,64 @@
+{
+  "name": "google-auth-system",
+  "version": "1.1.0",
+  "description": "5-Layer Fallback Google Authentication System for Playwright",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "google-auth-setup": "./bin/google-auth-setup.js",
+    "google-auth-clear": "./bin/google-auth-clear.js"
+  },
+  "files": [
+    "dist/",
+    "bin/",
+    "env.example"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepare": "tsc",
+    "test": "tsx src/tests/run-tests.ts",
+    "test:level1": "tsx src/tests/test-level1-storage.ts",
+    "test:level2": "tsx src/tests/test-level2-persistent.ts",
+    "test:level3": "tsx src/tests/test-level3-patchright.ts",
+    "test:level4": "tsx src/tests/test-level4-cdp.ts",
+    "test:level5": "tsx src/tests/test-level5-manual.ts",
+    "test:sites": "tsx src/tests/test-sites.ts",
+    "setup": "tsx src/setup.ts",
+    "clear": "tsx src/clear.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-org/google-auth-system.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "keywords": [
+    "google",
+    "auth",
+    "playwright",
+    "browser-automation",
+    "session-management"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "playwright": "^1.50.0",
+    "patchright": "^1.57.0",
+    "fingerprint-generator": "^2.1.0",
+    "fingerprint-injector": "^2.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "tsx": "^4.19.0",
+    "@types/node": "^22.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

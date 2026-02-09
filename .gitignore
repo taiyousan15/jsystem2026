@@ -10,6 +10,8 @@ kindle_*
 slide_*
 *.json
 !package.json
+!tsconfig.json
+!package-lock.json
 anime_*
 next-env.d.ts
 node_modules/

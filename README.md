@@ -176,7 +176,135 @@ jsystem2026/
 
 ---
 
+## Google Auth System (v1.1.0)
+
+**5-Layer Fallback Google Authentication System** - Playwright ベースの Google 認証自動化ライブラリ
+
+### 概要
+
+Google のログイン状態を **5段階のフォールバック** で自動復元するシステムです。Cookie や Chrome プロファイルを活用し、1回手動ログインすれば以降は全自動で認証済みブラウザを取得できます。
+
+```
+L1: StorageState (Cookie JSON復元)     → 最速 ~1秒
+L2: PersistentContext (Chromeプロファイル) → ~3秒
+L3: Patchright+Stealth (ステルスブラウザ) → ~3秒
+L4: CDP Connection (Chrome DevTools)    → ~4秒
+L5: Manual Login (手動ログイン)          → 初回のみ
+```
+
+### テスト結果 (2026-02-09)
+
+| レベル | direct-google | workspace | 合計 |
+|--------|:------------:|:---------:|:----:|
+| L1: StorageState | 15/15 (100%) | 20/20 (100%) | 35/35 |
+| L2: PersistentContext | 15/15 (100%) | 20/20 (100%) | 35/35 |
+| L3: Patchright+Stealth | 15/15 (100%) | 20/20 (100%) | 35/35 |
+| L4: CDP Connection | 15/15 (100%) | 20/20 (100%) | 35/35 |
+| **合計** | **60/60** | **80/80** | **140/140 (100%)** |
+
+テスト対象サイト: Google MyAccount, Gmail, Google Drive, Google Docs, Google Sheets, YouTube Studio, Google Calendar
+
+### 受け取り方法（3つの方法）
+
+#### 方法1: npm pack (ファイル直接渡し) - 最もシンプル
+
+```bash
+# 配布者がtarballを作成
+cd google-auth-system && npm pack
+# → google-auth-system-1.1.0.tgz を渡す
+
+# 受け取った人がインストール
+npm install ./google-auth-system-1.1.0.tgz
+npx google-auth-setup    # 初回: Chromeが開く → ログイン
+```
+
+#### 方法2: GitHub Packages (プライベートnpmレジストリ)
+
+```bash
+npm install @your-org/google-auth-system
+npx google-auth-setup
+```
+
+#### 方法3: git URL 直接インストール
+
+```bash
+npm install git+ssh://git@github.com:taiyousan15/jsystem2026.git#main
+npx google-auth-setup
+```
+
+### 使用方法
+
+```typescript
+import { GoogleAuthManager } from 'google-auth-system';
+
+// 認証（L1→L2→L3→L4→L5 の順で自動試行）
+const auth = new GoogleAuthManager();
+const result = await auth.authenticate();
+
+if (result.success) {
+  // result.page で認証済みページを操作
+  await result.page.goto('https://docs.google.com');
+}
+
+// セッションクリア（Cookie + プロファイル + メタデータ全削除）
+await auth.clearSession();
+
+// 終了時
+await auth.cleanup();
+```
+
+### CLI コマンド
+
+| コマンド | 用途 |
+|---------|------|
+| `npx google-auth-setup` | 初回セットアップ (Chrome が開いてログイン) |
+| `npx google-auth-clear` | 全セッションクリア |
+| `npx google-auth-clear --storage-state` | Cookie JSON のみクリア |
+| `npx google-auth-clear --profile` | Chrome プロファイルのみクリア |
+
+### ファイル構成
+
+```
+google-auth-system/
+├── src/
+│   ├── index.ts                    # エクスポート
+│   ├── auth-manager.ts             # メインマネージャー (5-Layer Fallback)
+│   ├── types.ts                    # 型定義・デフォルト設定
+│   ├── setup.ts                    # 初回セットアップ CLI
+│   ├── clear.ts                    # セッションクリア CLI
+│   ├── strategies/
+│   │   ├── level1-storage-state.ts    # L1: Cookie JSON 復元
+│   │   ├── level2-persistent-context.ts # L2: Chrome プロファイル
+│   │   ├── level3-patchright-stealth.ts # L3: ステルスブラウザ
+│   │   ├── level4-cdp-connection.ts   # L4: CDP + Cookie注入
+│   │   └── level5-manual-login.ts     # L5: 手動ログイン
+│   ├── utils/
+│   │   ├── session.ts              # セッション管理 + clearSession
+│   │   └── logger.ts               # ロガー
+│   └── tests/
+│       ├── run-tests.ts            # テストランナー CLI
+│       ├── test-runner.ts          # テスト実行エンジン
+│       └── test-sites-config.ts    # テスト対象サイト定義
+├── bin/
+│   ├── google-auth-setup.js        # npx 用 CLI (初回セットアップ)
+│   └── google-auth-clear.js        # npx 用 CLI (セッションクリア)
+├── package.json
+└── tsconfig.json
+```
+
+---
+
 ## 更新履歴
+
+### 2026-02-09: v1.1.0 Google Auth System 追加
+
+| 項目 | 内容 |
+|------|------|
+| 🔐 Google Auth System | 5-Layer Fallback 認証システム (L1〜L5) を新規追加 |
+| 🧪 テスト結果 | 全4レベル × 7サイト = **140/140 (100%)** 達成 |
+| 🧹 セッションクリア | `clearSession()` メソッド + `npx google-auth-clear` CLI |
+| 📦 npm配布対応 | tarball / GitHub Packages / git URL の3方法に対応 |
+| 🖥️ CLI コマンド | `google-auth-setup` / `google-auth-clear` 追加 |
 
 ### 2026-02-08: v1.0.3 リサーチ委譲ルール追加
 

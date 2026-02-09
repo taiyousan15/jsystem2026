@@ -1,0 +1,7 @@
+node_modules/
+dist/
+profiles/
+auth-state/
+.session-meta.json
+*.log
+*.tgz
