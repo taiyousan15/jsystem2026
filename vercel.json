@@ -1,0 +1,32 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/expire-miles",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/reset-daily-missions",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/streak-reminder",
+      "schedule": "0 21 * * *"
+    },
+    {
+      "path": "/api/cron/expire-notifications",
+      "schedule": "0 4 * * 0"
+    },
+    {
+      "path": "/api/cron/weekly-leaderboard-reset",
+      "schedule": "0 1 * * 1"
+    },
+    {
+      "path": "/api/cron/monthly-reset",
+      "schedule": "0 2 1 * *"
+    },
+    {
+      "path": "/api/cron/balance-integrity-check",
+      "schedule": "0 5 * * 0"
+    }
+  ]
+}
