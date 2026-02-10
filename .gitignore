@@ -18,3 +18,13 @@ node_modules/
 .next/
 .env
 .playwright-mcp/
+
+# LLM Stack
+logs/cost-tracking.jsonl
+litellm_postgres_data/
+litellm_redis_data/
+tests/.tmp/
+
+# JSON exceptions for LLM config
+!.claude/router-config.json
+!jest.config.ts

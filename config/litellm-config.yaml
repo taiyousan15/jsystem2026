@@ -1,0 +1,61 @@
+# LiteLLM Proxy Configuration
+# Docs: https://docs.litellm.ai/docs/proxy/configs
+
+model_list:
+  - model_name: claude-sonnet
+    litellm_params:
+      model: anthropic/claude-sonnet-4-5-20250929
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  - model_name: claude-haiku
+    litellm_params:
+      model: anthropic/claude-haiku-4-5-20251001
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  - model_name: claude-opus
+    litellm_params:
+      model: anthropic/claude-opus-4-6
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  - model_name: ollama-qwen3-coder
+    litellm_params:
+      model: ollama/qwen3-coder:30b
+      api_base: http://host.docker.internal:11434
+
+  - model_name: ollama-glm4
+    litellm_params:
+      model: ollama/glm4:latest
+      api_base: http://host.docker.internal:11434
+
+router_settings:
+  routing_strategy: simple-shuffle
+  num_retries: 2
+  timeout: 120
+  fallbacks:
+    - claude-sonnet: [claude-haiku, ollama-qwen3-coder]
+    - claude-opus: [claude-sonnet]
+    - claude-haiku: [ollama-qwen3-coder]
+
+litellm_settings:
+  drop_params: true
+  cache: true
+  cache_params:
+    type: redis
+    host: litellm-redis
+    port: 6379
+    ttl: 3600
+    supported_call_types:
+      - acompletion
+      - completion
+  success_callback: ["langfuse"]
+  failure_callback: ["langfuse"]
+  set_verbose: false
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  database_url: os.environ/DATABASE_URL
+  alerting: ["slack"]
+  alerting_threshold: 300
+
+  budget_duration: 30d
+  max_budget: 50

@@ -5,5 +5,30 @@
   "bin": {
     "context-guard": "./context-guard/install-all-node.js"
   },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "llm:start": "bash scripts/llm-stack.sh start",
+    "llm:stop": "bash scripts/llm-stack.sh stop",
+    "llm:status": "bash scripts/llm-stack.sh status",
+    "llm:logs": "bash scripts/llm-stack.sh logs",
+    "llm:cost": "npx ts-node scripts/cost-report.ts --period=day --models",
+    "llm:cost:week": "npx ts-node scripts/cost-report.ts --period=week --models",
+    "llm:cost:month": "npx ts-node scripts/cost-report.ts --period=month --models",
+    "llm:router:setup": "bash scripts/setup-model-router.sh"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.0.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
   "license": "MIT"
 }

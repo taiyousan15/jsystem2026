@@ -1,0 +1,147 @@
+# LLM Model Routing & Cost Optimization Configuration
+# Target: $200-255/month (47-58% reduction from $480/month)
+
+providers:
+  - name: anthropic-max
+    priority: 1
+    baseUrl: https://api.anthropic.com
+    apiKeyEnv: ANTHROPIC_API_KEY
+    enabled: true
+    healthEndpoint: /v1/messages
+
+  - name: ollama
+    priority: 2
+    baseUrl: http://localhost:11434
+    enabled: true
+    healthEndpoint: /api/tags
+
+  - name: anthropic-api
+    priority: 3
+    baseUrl: https://api.anthropic.com
+    apiKeyEnv: ANTHROPIC_API_KEY
+    enabled: true
+    healthEndpoint: /v1/messages
+
+  - name: openrouter
+    priority: 4
+    baseUrl: https://openrouter.ai/api/v1
+    apiKeyEnv: OPENROUTER_API_KEY
+    enabled: false
+    healthEndpoint: /api/v1/models
+
+models:
+  claude-opus:
+    id: claude-opus-4-6
+    provider: anthropic-max
+    displayName: Claude Opus 4.6
+    cost:
+      inputPerMillion: 5
+      outputPerMillion: 25
+      cachedInputPerMillion: 0.5
+    maxTokens: 200000
+    supportsCaching: true
+
+  claude-sonnet:
+    id: claude-sonnet-4-5-20250929
+    provider: anthropic-api
+    displayName: Claude Sonnet 4.5
+    cost:
+      inputPerMillion: 3
+      outputPerMillion: 15
+      cachedInputPerMillion: 0.3
+    maxTokens: 200000
+    supportsCaching: true
+
+  claude-haiku:
+    id: claude-haiku-4-5-20251001
+    provider: anthropic-api
+    displayName: Claude Haiku 4.5
+    cost:
+      inputPerMillion: 1
+      outputPerMillion: 5
+      cachedInputPerMillion: 0.1
+    maxTokens: 200000
+    supportsCaching: true
+
+  ollama-qwen3-coder:
+    id: qwen3-coder:30b
+    provider: ollama
+    displayName: Qwen3 Coder 30B (Local)
+    cost:
+      inputPerMillion: 0
+      outputPerMillion: 0
+    maxTokens: 32768
+    supportsCaching: false
+
+  ollama-glm4:
+    id: glm4:latest
+    provider: ollama
+    displayName: GLM-4 (Local)
+    cost:
+      inputPerMillion: 0
+      outputPerMillion: 0
+    maxTokens: 128000
+    supportsCaching: false
+
+  openrouter-free:
+    id: meta-llama/llama-3.3-70b-instruct:free
+    provider: openrouter
+    displayName: Llama 3.3 70B (Free)
+    cost:
+      inputPerMillion: 0
+      outputPerMillion: 0
+    maxTokens: 131072
+    supportsCaching: false
+
+routingRules:
+  - taskComplexity: trivial
+    preferredModel: ollama-qwen3-coder
+    fallbackModels: [claude-haiku, openrouter-free]
+    maxCostPerRequest: 0.01
+
+  - taskComplexity: simple
+    preferredModel: claude-haiku
+    fallbackModels: [ollama-qwen3-coder, openrouter-free]
+    maxCostPerRequest: 0.05
+
+  - taskComplexity: moderate
+    preferredModel: claude-sonnet
+    fallbackModels: [claude-haiku, ollama-qwen3-coder]
+    maxCostPerRequest: 0.20
+
+  - taskComplexity: complex
+    preferredModel: claude-sonnet
+    fallbackModels: [claude-opus, claude-haiku]
+    maxCostPerRequest: 0.50
+
+  - taskComplexity: expert
+    preferredModel: claude-opus
+    fallbackModels: [claude-sonnet]
+    maxCostPerRequest: 2.00
+
+budget:
+  monthlyLimit: 50
+  dailyLimit: 5
+  warningThresholdPercent: 80
+  hardLimitAction: fallback-to-free
+
+fallbackChain:
+  - claude-opus
+  - claude-sonnet
+  - claude-haiku
+  - ollama-qwen3-coder
+  - openrouter-free
+
+cache:
+  enabled: true
+  backend: redis
+  ttlSeconds: 3600
+  semanticMatching: true
+
+rateLimit:
+  anthropic:
+    requestsPerMinute: 50
+    tokensPerMinute: 100000
+  ollama:
+    requestsPerMinute: 30
+    tokensPerMinute: 50000

@@ -1,0 +1,47 @@
+{
+  "version": "1.0",
+  "defaultModel": "claude-sonnet-4-5-20250929",
+  "routing": {
+    "default": {
+      "model": "claude-sonnet-4-5-20250929",
+      "provider": "anthropic"
+    },
+    "background": {
+      "model": "qwen3-coder:30b",
+      "provider": "ollama"
+    },
+    "think": {
+      "model": "claude-opus-4-6",
+      "provider": "anthropic"
+    },
+    "longContext": {
+      "model": "qwen3-coder:30b",
+      "provider": "ollama"
+    },
+    "webSearch": {
+      "model": "claude-haiku-4-5-20251001",
+      "provider": "anthropic"
+    }
+  },
+  "providers": {
+    "anthropic": {
+      "baseUrl": "https://api.anthropic.com",
+      "apiKeyEnv": "ANTHROPIC_API_KEY"
+    },
+    "ollama": {
+      "baseUrl": "http://localhost:11434",
+      "models": ["qwen3-coder:30b", "glm4:latest"]
+    },
+    "openrouter": {
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "apiKeyEnv": "OPENROUTER_API_KEY",
+      "models": ["meta-llama/llama-3.3-70b-instruct:free"]
+    }
+  },
+  "budgetGuard": {
+    "enabled": true,
+    "monthlyLimit": 50,
+    "dailyLimit": 5,
+    "fallbackOnExceed": "ollama"
+  }
+}
