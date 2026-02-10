@@ -13,6 +13,10 @@ export const userRepository = {
     return prisma.user.findUnique({ where: { id } })
   },
 
+  async findByEmail(email: string): Promise<User | null> {
+    return prisma.user.findFirst({ where: { email } })
+  },
+
   async create(data: {
     clerkId: string
     email: string
