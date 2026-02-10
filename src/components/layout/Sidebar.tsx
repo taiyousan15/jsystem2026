@@ -15,6 +15,7 @@ import {
   Bell,
   Settings,
   Shield,
+  Video,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -25,6 +26,7 @@ const memberLinks = [
   { href: '/badges', label: 'バッジ', icon: Award },
   { href: '/exchange', label: '交換', icon: ShoppingBag },
   { href: '/events', label: 'イベント', icon: Calendar },
+  { href: '/zoom', label: 'グルコン', icon: Video },
   { href: '/scan', label: 'QRスキャン', icon: QrCode },
   { href: '/profile', label: 'プロフィール', icon: User },
   { href: '/referral', label: '友達招待', icon: Users },
@@ -41,6 +43,7 @@ const adminLinks = [
   { href: '/admin/badges', label: 'バッジ管理', icon: Award },
   { href: '/admin/mile-rules', label: 'マイルルール', icon: Coins },
   { href: '/admin/notifications', label: '通知管理', icon: Bell },
+  { href: '/admin/zoom', label: 'Zoom管理', icon: Video },
   { href: '/admin/audit-logs', label: '監査ログ', icon: Shield },
 ]
 
