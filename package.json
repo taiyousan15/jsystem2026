@@ -28,7 +28,12 @@
     "typescript": "^5.4.0"
   },
   "dependencies": {
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "@anthropic-ai/sdk": "^0.39.0",
+    "openai": "^4.77.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }

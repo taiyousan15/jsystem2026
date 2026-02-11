@@ -135,6 +135,22 @@ export interface ModelRoutingConfig {
   readonly fallbackChain: readonly ModelType[]
 }
 
+export interface LLMRequest {
+  readonly prompt: string
+  readonly systemPrompt?: string
+  readonly maxTokens?: number
+  readonly temperature?: number
+}
+
+export interface LLMResponse {
+  readonly content: string
+  readonly model: ModelType
+  readonly provider: ProviderType
+  readonly inputTokens: number
+  readonly outputTokens: number
+  readonly latencyMs: number
+}
+
 export interface CostReport {
   readonly period: 'day' | 'week' | 'month'
   readonly totalCost: number

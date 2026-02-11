@@ -1,5 +1,6 @@
 export { CostTracker } from './CostTracker'
 export { ModelRouter } from './ModelRouter'
+export { LLMClient } from './LLMClient'
 export { PerformanceService } from './PerformanceService'
 export type {
   ModelType,
@@ -18,4 +19,6 @@ export type {
   CostReport,
   CodexSuggestion,
   TaskCategory,
+  LLMRequest,
+  LLMResponse,
 } from './types'
