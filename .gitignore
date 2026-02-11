@@ -28,3 +28,6 @@ tests/.tmp/
 # JSON exceptions for LLM config
 !.claude/router-config.json
 !jest.config.ts
+logs/global-cost-tracking.jsonl
+tmp-test-logs/
+tmp-integration-logs/
