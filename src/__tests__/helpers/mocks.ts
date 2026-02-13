@@ -26,7 +26,6 @@ export function createMockUser(overrides: Partial<User & { pointBalance: PointBa
     createdAt: new Date('2025-01-01'),
     updatedAt: new Date('2025-01-01'),
     pointBalance: {
-      id: nextId(),
       userId: id,
       totalMiles: 1000,
       lifetimeMiles: 2000,
@@ -39,7 +38,6 @@ export function createMockUser(overrides: Partial<User & { pointBalance: PointBa
 
 export function createMockPointBalance(overrides: Partial<PointBalance> = {}): PointBalance {
   return {
-    id: nextId(),
     userId: nextId(),
     totalMiles: 1000,
     lifetimeMiles: 2000,
@@ -67,12 +65,12 @@ export function createMockMileRule(overrides: Partial<MileRule> = {}): MileRule 
   return {
     id: nextId(),
     actionCode: 'test_action',
-    name: 'テストアクション',
-    description: 'テスト用',
+    actionName: 'テストアクション',
     baseMiles: 100,
     dailyLimit: null,
     cooldownSeconds: 0,
     isActive: true,
+    conditions: {},
     createdAt: new Date('2025-01-01'),
     updatedAt: new Date('2025-01-01'),
     ...overrides,
@@ -85,6 +83,7 @@ export function createMockBadge(overrides: Partial<Badge> = {}): Badge {
     name: 'テストバッジ',
     description: 'テスト用バッジ',
     iconUrl: '/badges/test.png',
+    category: 'general',
     rarity: 'common',
     condition: {},
     isActive: true,
@@ -95,7 +94,6 @@ export function createMockBadge(overrides: Partial<Badge> = {}): Badge {
 
 export function createMockUserBadge(overrides: Partial<UserBadge> = {}): UserBadge {
   return {
-    id: nextId(),
     userId: nextId(),
     badgeId: nextId(),
     earnedAt: new Date('2025-01-01'),
@@ -108,12 +106,19 @@ export function createMockEvent(overrides: Partial<Event> = {}): Event {
     id: overrides.id ?? nextId(),
     title: 'テストイベント',
     description: 'テスト用イベント',
+    type: 'seminar',
     startAt: new Date('2025-06-01T10:00:00Z'),
     endAt: new Date('2025-06-01T12:00:00Z'),
     capacity: 30,
     milesReward: 500,
     status: 'upcoming',
     location: null,
+    onlineUrl: null,
+    qrPayload: `qr_${Date.now()}`,
+    isPaid: false,
+    price: null,
+    tierRequired: null,
+    createdBy: null,
     createdAt: new Date('2025-01-01'),
     updatedAt: new Date('2025-01-01'),
     ...overrides,
@@ -122,11 +127,11 @@ export function createMockEvent(overrides: Partial<Event> = {}): Event {
 
 export function createMockEventAttendee(overrides: Partial<EventAttendee> = {}): EventAttendee {
   return {
-    id: nextId(),
     eventId: nextId(),
     userId: nextId(),
     checkedIn: false,
-    createdAt: new Date('2025-01-01'),
+    checkedInAt: null,
+    registeredAt: new Date('2025-01-01'),
     ...overrides,
   }
 }
@@ -140,6 +145,7 @@ export function createMockCatalogItem(overrides: Partial<CatalogItem> = {}): Cat
     requiredMiles: 500,
     stock: 10,
     imageUrl: null,
+    metadata: {},
     isActive: true,
     createdAt: new Date('2025-01-01'),
     updatedAt: new Date('2025-01-01'),
@@ -155,6 +161,8 @@ export function createMockExchangeRequest(overrides: Partial<ExchangeRequest> = 
     milesSpent: 500,
     status: 'pending',
     shippingAddressId: null,
+    trackingNumber: null,
+    adminNote: null,
     createdAt: new Date('2025-01-01'),
     updatedAt: new Date('2025-01-01'),
     ...overrides,
@@ -163,12 +171,12 @@ export function createMockExchangeRequest(overrides: Partial<ExchangeRequest> = 
 
 export function createMockStreak(overrides: Partial<UserStreak> = {}): UserStreak {
   return {
-    id: nextId(),
     userId: nextId(),
     currentStreak: 5,
     longestStreak: 10,
     lastActiveDate: new Date('2025-01-01'),
     freezeRemaining: 3,
+    updatedAt: new Date('2025-01-01'),
     ...overrides,
   }
 }

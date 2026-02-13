@@ -2,6 +2,7 @@ import { withAdmin } from '@/lib/admin-handler'
 import { successResponse, paginatedResponse } from '@/lib/api-handler'
 import { prisma } from '@/lib/db'
 import { AppError } from '@/lib/errors'
+import type { Prisma } from '@prisma/client'
 
 export const GET = withAdmin(async (_clerkId, request) => {
   const url = new URL(request.url)
@@ -81,11 +82,11 @@ export const PATCH = withAdmin(async (clerkId, request) => {
     throw new AppError('ルールが見つかりません', 'RULE_NOT_FOUND', 404)
   }
 
-  const allowedFields = ['actionName', 'baseMiles', 'dailyLimit', 'cooldownSeconds', 'isActive', 'conditions']
-  const updateData: Record<string, unknown> = {}
+  const allowedFields = ['actionName', 'baseMiles', 'dailyLimit', 'cooldownSeconds', 'isActive', 'conditions'] as const
+  const updateData: Prisma.MileRuleUpdateInput = {}
   for (const field of allowedFields) {
     if (updates[field] !== undefined) {
-      updateData[field] = updates[field]
+      (updateData as Record<string, unknown>)[field] = updates[field]
     }
   }
 
@@ -100,8 +101,8 @@ export const PATCH = withAdmin(async (clerkId, request) => {
       action: 'mile_rule_update',
       targetType: 'mile_rule',
       targetId: ruleId,
-      beforeValue: { actionName: existing.actionName, baseMiles: existing.baseMiles, isActive: existing.isActive },
-      afterValue: updateData,
+      beforeValue: { actionName: existing.actionName, baseMiles: existing.baseMiles, isActive: existing.isActive } as Prisma.InputJsonValue,
+      afterValue: updateData as unknown as Prisma.InputJsonValue,
     },
   })
 

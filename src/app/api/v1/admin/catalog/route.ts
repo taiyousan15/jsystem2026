@@ -98,7 +98,7 @@ export const PATCH = withAdmin(async (clerkId, request) => {
       targetType: 'catalog_item',
       targetId: itemId,
       beforeValue: { name: existing.name, requiredMiles: existing.requiredMiles, isActive: existing.isActive },
-      afterValue: updateData,
+      afterValue: updateData as Record<string, string | number | boolean | null>,
     },
   })
 

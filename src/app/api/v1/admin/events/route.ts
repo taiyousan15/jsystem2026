@@ -125,7 +125,7 @@ export const PATCH = withAdmin(async (clerkId, request) => {
       targetType: 'event',
       targetId: eventId,
       beforeValue: { status: existing.status, title: existing.title },
-      afterValue: updateData,
+      afterValue: updateData as Record<string, string | number | boolean | null>,
     },
   })
 

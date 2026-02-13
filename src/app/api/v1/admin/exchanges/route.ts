@@ -86,7 +86,7 @@ export const PATCH = withAdmin(async (clerkId, request) => {
       targetType: 'exchange_request',
       targetId: exchangeId,
       beforeValue: { status: existing.status },
-      afterValue: updateData,
+      afterValue: updateData as Record<string, string | number | boolean | null>,
     },
   })
 

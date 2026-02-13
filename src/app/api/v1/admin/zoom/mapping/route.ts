@@ -33,7 +33,7 @@ export const PUT = withAdmin(async (_clerkId, request) => {
   const existing = await zoomRepository.findMappingByEmail(zoomEmail)
   if (existing) {
     const updated = await zoomRepository.updateMapping(existing.id, {
-      userId,
+      user: { connect: { id: userId } },
       zoomUserId,
       verified: true,
     })
